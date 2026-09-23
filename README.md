@@ -30,12 +30,17 @@ Actions run one at a time with a short gap, so GitHub's secondary rate limit is 
 
 <p align="center">
 <picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/strip-cannot-undo-light.svg"><img src="docs/gfx/strip-cannot-undo.svg" alt="Cannot be undone" width="100%"></picture>
-<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/scope-light.svg"><img src="docs/gfx-c/scope.svg" alt="Reversible: archive and unarchive, private back to public, filters, sorting, selection. Not reversible: delete (GitHub keeps no copy), public to private (stars and watchers erased, forks detached)." width="100%"></picture>
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/scope-light.svg"><img src="docs/gfx-c/scope.svg" alt="Reversible: archive and unarchive, private back to public, filters, sorting, selection. Not reversible: delete (90-day restore on GitHub, then gone), public to private (stars and watchers erased, forks detached)." width="100%"></picture>
 <picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/callout-private-light.svg"><img src="docs/gfx-c/callout-private.svg" alt="Before making a public repository private: GitHub permanently erases its stars and watchers and detaches every fork. The dialog says this again before you continue." width="100%"></picture>
-<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/callout-delete-light.svg"><img src="docs/gfx-c/callout-delete.svg" alt="Before deleting: nothing comes back, code, issues, releases, stars. You type the number of repositories to confirm." width="100%"></picture>
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/callout-delete-light.svg"><img src="docs/gfx-c/callout-delete.svg" alt="Before deleting: red dialog, exact list, type the count. A snapshot zip downloads first and the repository lands in the recycle bin; GitHub can restore it for about 90 days, then it is gone." width="100%"></picture>
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/callout-bin-light.svg"><img src="docs/gfx-c/callout-bin.svg" alt="Recycle bin: before a delete, a zip of the default branch with a metadata file; after, the repository listed in the bin with what it was, next to GitHub's own 90-day restore link." width="100%"></picture>
 </p>
 
-Archived repositories are read-only; unarchive before changing their visibility. Every action lists the exact repositories it will touch before anything runs.
+Archived repositories are read-only; unarchive before changing their visibility. Every action lists the exact repositories it will touch before anything runs. In the peek dialog, "hide readme" gives the file list the whole width and "full screen" fills the window; both animate, and the dialogs fade and settle rather than pop.
+
+**Deleting, with a net.** The delete dialog is red, lists every repository, and asks you to type the count. Before each delete it downloads a snapshot zip (the default branch as files, plus a `.repo-sweep.json` with the description, language, stars, topics and dates; not the git history), and a repository whose snapshot fails is left alone. After the delete the repository is listed in the page's **recycle bin** (the `bin` button in the header) with what it was and which zip holds it; the list lives in this browser, and you can copy it as JSON. GitHub itself keeps a deleted repository restorable for about 90 days under Settings, Repositories, Deleted repositories (not always for forks); the bin links there.
+
+**Forks cannot be made private.** GitHub refuses the change on any fork (the API answers 422); the only route is a separate repository. When "make private" meets forks, the dialog says so and offers to create an empty private repository for each one, named after the fork plus a suffix (`-private` by default). It then gives you the two git commands that move the whole history into the copy, ready to paste. The fork itself stays as it is until you delete it, which you can do from the same page once the copy is pushed. A fork you never changed is only a bookmark: deleting it and starring the original costs nothing.
 
 ## Run it
 
@@ -93,11 +98,11 @@ MIT.
   "sorts": ["recently pushed", "least recently pushed", "most stars", "newest", "largest", "name"],
   "selection": ["checkbox", "row click", "shift-click range", "select all visible", "select-by menu: add or remove a category (all visible, public, private, forks, archived, stale, empty, no stars) or clear"],
   "actions": {
-    "private": "PATCH /repos/:full_name {private:true}",
+    "private": "PATCH /repos/:full_name {private:true}; forks are refused by GitHub, so the dialog offers POST /user/repos {name: fork+suffix, private:true} per fork plus the git clone --bare / push --mirror commands, and the fork is left in place",
     "public": "PATCH /repos/:full_name {private:false}",
     "archive": "PATCH /repos/:full_name {archived:true}",
     "unarchive": "PATCH /repos/:full_name {archived:false}",
-    "delete": "DELETE /repos/:full_name, requires typing the count"
+    "delete": "DELETE /repos/:full_name, red dialog, requires typing the count; optional snapshot zip first (git trees + blobs of the default branch, stored zip written in-page, plus .repo-sweep.json); a failed snapshot skips the delete; the deleted repository is recorded in the recycle bin (localStorage 'repo-sweep:bin') which links to GitHub's 90-day restore page"
   },
   "run_policy": "sequential, 300 ms gap, per-repo log, stop on 401 or rate limit",
   "peek": {
@@ -111,7 +116,8 @@ MIT.
     "scope": "the selection, or everything visible when nothing is selected"
   },
   "security": ["no third-party scripts, styles, fonts or analytics", "API text rendered via textContent, never innerHTML", "third-party README HTML confined to a sandboxed iframe", "token never in a URL", "recommend an expiring fine-grained token, delete_repo only when deleting, revoke after the sweep"],
-  "irreversible": ["public to private erases stars and watchers and detaches forks", "delete keeps no copy", "archived is read-only until unarchived"],
+  "irreversible": ["public to private erases stars and watchers and detaches forks", "delete: GitHub can restore for about 90 days (Settings, Repositories, Deleted repositories), then gone; repo-sweep keeps a snapshot zip and a bin entry", "archived is read-only until unarchived"],
+  "peek_modes": ["hide readme (files take the full width)", "full screen", "animated open, close and resize; disabled under prefers-reduced-motion"],
   "license": "MIT"
 }
 ```

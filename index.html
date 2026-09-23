@@ -120,16 +120,47 @@ input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); m
 
 dialog { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 22px; width: min(520px, calc(100vw - 32px)); }
 dialog::backdrop { background: color-mix(in srgb, var(--bg) 60%, transparent); }
+/* Open and close animations: the UA keeps display/overlay until the transition ends (allow-discrete). */
+dialog { opacity: 0; transform: translateY(10px) scale(.985); transition: opacity .22s ease, transform .26s cubic-bezier(.2,.8,.2,1), overlay .26s allow-discrete, display .26s allow-discrete; }
+dialog[open] { opacity: 1; transform: none; }
+@starting-style { dialog[open] { opacity: 0; transform: translateY(10px) scale(.985); } }
+dialog::backdrop { opacity: 0; transition: opacity .22s ease, overlay .26s allow-discrete, display .26s allow-discrete; }
+dialog[open]::backdrop { opacity: 1; }
+@starting-style { dialog[open]::backdrop { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { dialog, dialog::backdrop, #peek, #peek .readme, #peek .files { transition: none !important; } }
+dialog .warn { display: flex; gap: 10px; align-items: flex-start; border: 1px solid color-mix(in srgb, var(--danger) 55%, transparent); background: color-mix(in srgb, var(--danger) 9%, var(--surface)); color: var(--ink); border-radius: 6px; padding: 10px 12px; margin: 0 0 4px; }
+dialog .warn b { color: var(--danger); }
+dialog .warn svg { flex: none; margin-top: 1px; }
+dialog.danger h2 { color: var(--danger); }
+dialog .opt { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0 0; color: var(--dim); }
+dialog .opt input { margin-top: 2px; }
+#binList { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+#binList td, #binList th { padding: 6px 8px; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+#binList th { color: var(--sub); font-weight: 400; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; border-top: 0; }
+#bin { width: min(900px, calc(100vw - 32px)); max-height: calc(100vh - 32px); }
+#bin .scroll { max-height: 50vh; overflow: auto; margin: 12px 0; }
+#bin .empty { color: var(--sub); padding: 24px 0; text-align: center; }
 dialog h2 { margin: 0 0 8px; font-size: 16px; }
 dialog ul { max-height: 200px; overflow: auto; margin: 12px 0; padding: 8px 12px; list-style: none; border: 1px solid var(--line); border-radius: 6px; background: var(--raised); }
 dialog li { line-height: 1.7; }
 dialog label { display: block; margin: 14px 0; }
 dialog label input { width: 100%; margin-top: 6px; padding: 8px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; }
 .dlgActions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+dialog .forks { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 12px; }
+dialog .forks p { margin: 0 0 10px; color: var(--dim); }
+dialog .forks .check { display: flex; gap: 8px; align-items: center; margin: 0 0 8px; }
+dialog .forks .suffix { display: flex; gap: 8px; align-items: center; margin: 0; color: var(--dim); }
+dialog .forks .suffix input { width: 160px; margin: 0; }
+.log header button + button { margin-left: 6px; }
 
 /* Repository peek: directory listing (5) beside the rendered README (3). */
-#peek { width: min(1240px, calc(100vw - 32px)); height: min(820px, calc(100vh - 32px)); padding: 0; display: flex; flex-direction: column; }
-#peek:not([open]) { display: none; }
+#peek { width: min(1240px, calc(100vw - 32px)); height: min(820px, calc(100vh - 32px)); max-width: 100vw; max-height: 100vh; padding: 0; flex-direction: column; transition: width .3s cubic-bezier(.2,.8,.2,1), height .3s cubic-bezier(.2,.8,.2,1), border-radius .3s, opacity .22s ease, transform .26s cubic-bezier(.2,.8,.2,1), overlay .26s allow-discrete, display .26s allow-discrete; }
+#peek[open] { display: flex; }
+#peek.full { width: 100vw; height: 100vh; border-radius: 0; border: 0; }
+#peek .readme { transition: flex-grow .35s cubic-bezier(.2,.8,.2,1), opacity .25s ease; }
+#peek.noreadme .readme { flex-grow: 0.0001; opacity: 0; pointer-events: none; overflow: hidden; }
+#peek.noreadme .files { border-right: 0; }
+#peek header .right button[aria-pressed=true] { color: var(--accent); }
 #peek header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
 #peek header h2 { margin: 0; font-size: 14px; }
 #peek header .crumbs { color: var(--dim); display: flex; gap: 4px; flex-wrap: wrap; }
@@ -179,6 +210,7 @@ dialog label input { width: 100%; margin-top: 6px; padding: 8px 10px; background
     <img id="avatar" alt="" width="22" height="22">
     <span id="login"></span>
     <span id="count" class="sub"></span>
+    <button id="binOpen" class="ghost" type="button">bin</button>
     <button id="reload" class="ghost" type="button">reload</button>
     <button id="forget" class="ghost" type="button">forget token</button>
   </div>
@@ -235,7 +267,7 @@ dialog label input { width: 100%; margin-top: 6px; padding: 8px 10px; background
 
 <div id="log" class="log" hidden>
   <div class="box">
-    <header><span id="logTitle">Activity</span><button id="logClose" class="ghost" type="button">close</button></header>
+    <header><span id="logTitle">Activity</span><button id="logCommands" class="ghost" type="button" hidden>copy git commands</button><button id="logClose" class="ghost" type="button">close</button></header>
     <progress id="progress" value="0" max="1" hidden></progress>
     <pre id="logText"></pre>
   </div>
@@ -268,6 +300,8 @@ dialog label input { width: 100%; margin-top: 6px; padding: 8px 10px; background
     <nav class="crumbs" id="peekCrumbs" aria-label="Path"></nav>
     <div class="right">
       <a id="peekLink" href="#" target="_blank" rel="noopener" class="dim">open on GitHub</a>
+      <button type="button" id="peekReadmeToggle" class="ghost" aria-pressed="false">hide readme</button>
+      <button type="button" id="peekFull" class="ghost" aria-pressed="false">full screen</button>
       <button type="button" id="peekClose" class="ghost">close</button>
     </div>
   </header>
@@ -281,11 +315,25 @@ dialog label input { width: 100%; margin-top: 6px; padding: 8px 10px; background
   </div>
 </dialog>
 
+<dialog id="bin" aria-label="Recycle bin">
+  <h2>Recycle bin</h2>
+  <p class="dim">Every repository deleted from this page, with what it was. GitHub itself can restore a deleted repository for about 90 days from <a href="https://github.com/settings/deleted_repositories" target="_blank" rel="noopener">Settings, Repositories, Deleted repositories</a>; the snapshot zip is yours regardless. This list lives in this browser only.</p>
+  <div class="scroll"><table id="binList"><thead><tr><th>Repository</th><th>Deleted</th><th>Was</th><th>Snapshot</th></tr></thead><tbody id="binRows"></tbody></table><p id="binEmpty" class="empty" hidden>Nothing deleted yet.</p></div>
+  <div class="dlgActions"><button type="button" id="binCopy" class="ghost">copy as JSON</button><button type="button" id="binClear" class="ghost">clear bin</button><button type="button" id="binClose" class="primary">Close</button></div>
+</dialog>
+
 <dialog id="dlg">
   <form method="dialog">
     <h2 id="dlgTitle"></h2>
+    <div id="dlgWarn" class="warn" hidden><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span><b>Permanent on GitHub's side.</b> <span id="dlgWarnText"></span></span></div>
     <p id="dlgBody" class="dim"></p>
     <ul id="dlgList"></ul>
+    <div id="dlgForks" class="forks" hidden>
+      <p><b id="dlgForkCount"></b> of these are forks. GitHub refuses to make a fork private; the only way is a separate repository. repo-sweep can create an empty private repository for each fork and give you the two git commands that move the full history into it. The fork itself stays as it is until you delete it.</p>
+      <label class="check"><input id="dlgForkCopy" type="checkbox" checked> create a private copy of each fork, named</label>
+      <label class="suffix">name + <input id="dlgSuffix" value="-private" spellcheck="false" autocomplete="off"></label>
+    </div>
+    <label id="dlgSnapshotLabel" class="opt" hidden><input id="dlgSnapshot" type="checkbox" checked> <span>Download a snapshot zip of each repository first (the default branch as files plus a metadata JSON, not the git history). A repository whose snapshot fails is not deleted.</span></label>
     <label id="dlgTypedLabel" hidden>Type <b id="dlgWord"></b> to confirm
       <input id="dlgTyped" autocomplete="off" spellcheck="false">
     </label>
@@ -333,7 +381,7 @@ const ACTIONS = {
     body: "Archived repositories are read-only until unarchived. Unarchive before changing their visibility." },
   unarchive: { label: "unarchive", past: "unarchived", skip: (r) => !r.archived, run: patch({ archived: false }), apply: (r) => { r.archived = false; }, body: "" },
   delete: { label: "delete", past: "deleted", skip: () => false, run: (r) => gh(`/repos/${r.full_name}`, { method: "DELETE" }), apply: (r) => { state.repos = state.repos.filter((x) => x !== r); },
-    body: "Deleting a repository cannot be undone. GitHub keeps no copy: code, issues, stars, releases and forks' upstream link are all gone.", typed: true },
+    body: "Code, issues, pull requests, stars, releases and the forks' upstream link go with it. GitHub can restore a deleted repository for about 90 days from Settings, Repositories, Deleted repositories (not always for forks); after that it is gone for good.", typed: true, danger: true },
 };
 
 // ---------------------------------------------------------------- helpers
@@ -480,18 +528,25 @@ function render() {
   all.checked = rows.length > 0 && rows.every((r) => state.selected.has(r.full_name));
   all.indeterminate = !all.checked && rows.some((r) => state.selected.has(r.full_name));
   $("#sel").textContent = `${state.selected.size} selected`;
+  $("#sort").value = state.sort;
   for (const b of document.querySelectorAll("[data-act]")) b.disabled = state.busy || state.selected.size === 0;
 }
 
 // ---------------------------------------------------------------- dialog
 
-function ask({ title, body, list = [], typed = null, ok = "Continue" }) {
+function ask({ title, body, list = [], typed = null, ok = "Continue", forks = 0, danger = false, snapshot = false }) {
   const dlg = $("#dlg");
+  dlg.classList.toggle("danger", danger);
+  $("#dlgWarn").hidden = !danger;
+  $("#dlgWarnText").textContent = danger ? `${plural(list.length, "repository").replace("repositorys", "repositories")} will be deleted.` : "";
+  $("#dlgSnapshotLabel").hidden = !snapshot;
   $("#dlgTitle").textContent = title;
   $("#dlgBody").textContent = body;
   $("#dlgBody").hidden = !body;
   $("#dlgList").replaceChildren(...list.map((n) => h("li", {}, n)));
   $("#dlgList").hidden = list.length === 0;
+  $("#dlgForks").hidden = !forks;
+  $("#dlgForkCount").textContent = String(forks);
   $("#dlgTypedLabel").hidden = !typed;
   $("#dlgWord").textContent = typed || "";
   $("#dlgTyped").value = "";
@@ -517,6 +572,7 @@ async function runAction(key) {
   const targets = [...state.selected].map((n) => state.repos.find((r) => r.full_name === n)).filter(Boolean);
   const todo = targets.filter((r) => !act.skip(r));
   const skipped = targets.length - todo.length;
+  const forks = key === "private" ? todo.filter((r) => r.fork) : [];
   if (!todo.length) return toast(`Nothing to ${act.label}: all ${plural(targets.length, "selected repo")} already are.`);
   if (key === "delete" && state.scopes !== null && !state.scopes.split(/,\s*/).includes("delete_repo")) {
     return ask({ title: "This token cannot delete", body: "Classic tokens need the delete_repo scope. With the gh CLI: gh auth refresh -h github.com -s delete_repo, then paste the new token.", ok: "OK" });
@@ -527,8 +583,15 @@ async function runAction(key) {
     list: todo.map((r) => r.full_name),
     typed: act.typed ? String(todo.length) : null,
     ok: act.typed ? "Delete" : "Continue",
+    forks: forks.length,
+    danger: !!act.danger,
+    snapshot: key === "delete",
   });
   if (!yes) return;
+  const wantSnapshot = key === "delete" && $("#dlgSnapshot").checked;
+  const copyForks = forks.length > 0 && $("#dlgForkCopy").checked;
+  const suffix = $("#dlgSuffix").value.trim() || "-private";
+  const commands = [];
 
   state.busy = true;
   render();
@@ -539,11 +602,25 @@ async function runAction(key) {
   let done = 0, failed = 0;
   for (const r of todo) {
     try {
+      if (forks.includes(r)) {
+        if (!copyForks) { logLine("fail", `skip  ${r.full_name}: GitHub cannot make a fork private`); failed++; continue; }
+        const name = r.name + suffix;
+        const { data } = await gh("/user/repos", { method: "POST", body: JSON.stringify({ name, private: true, description: `Private copy of ${r.full_name}` }) });
+        done++;
+        logLine("ok", `ok    created private ${data.full_name} (empty); the fork ${r.full_name} is unchanged`);
+        commands.push(`git clone --bare https://github.com/${r.full_name}.git ${r.name}.git && cd ${r.name}.git && git push --mirror https://github.com/${data.full_name}.git && cd .. && rm -rf ${r.name}.git`);
+        continue;
+      }
+      let snap = null;
+      if (key === "delete" && wantSnapshot) {
+        snap = await snapshot(r);
+        logLine("ok", `zip   ${snap.filename} (${plural(snap.files, "file")}${snap.truncated ? ", tree truncated by GitHub, incomplete" : ""})`);
+      }
       await act.run(r);
       act.apply(r);
       done++;
       logLine("ok", `ok    ${act.past} ${r.full_name}`);
-      if (key === "delete") state.selected.delete(r.full_name);
+      if (key === "delete") { state.selected.delete(r.full_name); binAdd(r, snap); }
     } catch (e) {
       failed++;
       logLine("fail", `fail  ${r.full_name}: ${e.message}`);
@@ -557,7 +634,89 @@ async function runAction(key) {
   state.busy = false;
   bar.hidden = true;
   $("#logTitle").textContent = `${act.label}: ${done} ${act.past}${failed ? `, ${failed} failed` : ""}`;
+  if (commands.length) {
+    logLine("ok", `Move the history into the ${plural(commands.length, "copy").replace("copys", "copies")} with git (copy git commands above), then delete the forks here.`);
+    const btn = $("#logCommands");
+    btn.hidden = false;
+    btn.onclick = () => navigator.clipboard.writeText(commands.join("\n")).then(() => toast(`Copied ${plural(commands.length, "command")}`), () => ask({ title: "Clipboard blocked", body: "Copy from here.", list: commands, ok: "OK" }));
+    try { await loadRepos(); } catch (e) { toast(e.message); } // the new private repositories join the list
+  } else $("#logCommands").hidden = true;
   render();
+}
+
+// ---------------------------------------------------------------- snapshot zip and recycle bin
+
+// A stored (uncompressed) zip, written by hand so the page stays dependency-free. No zip64: over 65535 entries is refused.
+const CRC = Uint32Array.from({ length: 256 }, (_, n) => { for (let k = 0; k < 8; k++) n = n & 1 ? 0xedb88320 ^ (n >>> 1) : n >>> 1; return n >>> 0; });
+const crc32 = (u8) => { let c = 0xffffffff; for (const b of u8) c = CRC[(c ^ b) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+function zipStore(files) {
+  if (files.length > 65535) throw new Error("too many files for a plain zip");
+  const enc = new TextEncoder(), parts = [], central = [];
+  let offset = 0;
+  const dos = (() => { const d = new Date(); return [((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)) & 0xffff, (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xffff]; })();
+  for (const f of files) {
+    const name = enc.encode(f.name), crc = crc32(f.data), size = f.data.length;
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, dos[0], true); lh.setUint16(12, dos[1], true); lh.setUint32(14, crc, true); lh.setUint32(18, size, true); lh.setUint32(22, size, true); lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(new Uint8Array(lh.buffer), name, f.data);
+    const cd = new DataView(new ArrayBuffer(46));
+    cd.setUint32(0, 0x02014b50, true); cd.setUint16(4, 20, true); cd.setUint16(6, 20, true); cd.setUint16(8, 0x0800, true); cd.setUint16(10, 0, true);
+    cd.setUint16(12, dos[0], true); cd.setUint16(14, dos[1], true); cd.setUint32(16, crc, true); cd.setUint32(20, size, true); cd.setUint32(24, size, true); cd.setUint16(28, name.length, true);
+    cd.setUint16(30, 0, true); cd.setUint16(32, 0, true); cd.setUint16(34, 0, true); cd.setUint16(36, 0, true); cd.setUint32(38, 0, true); cd.setUint32(42, offset, true);
+    central.push(new Uint8Array(cd.buffer), name);
+    offset += 30 + name.length + size;
+  }
+  const cdSize = central.reduce((s, p) => s + p.length, 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true); end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, new Uint8Array(end.buffer)], { type: "application/zip" });
+}
+const b64 = (s) => Uint8Array.from(atob(s.replace(/\s/g, "")), (c) => c.charCodeAt(0));
+function download(blob, filename) {
+  const a = h("a", { href: URL.createObjectURL(blob), download: filename });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+}
+
+// The default branch as files (git tree + blobs through the API) plus .repo-sweep.json, zipped and downloaded.
+async function snapshot(r) {
+  const { data: tree } = await gh(`/repos/${r.full_name}/git/trees/${encodeURIComponent(r.default_branch)}?recursive=1`);
+  const blobs = tree.tree.filter((e) => e.type === "blob");
+  const files = [];
+  let i = 0;
+  await Promise.all(Array.from({ length: 4 }, async () => {
+    while (i < blobs.length) {
+      const e = blobs[i++];
+      const { data } = await gh(`/repos/${r.full_name}/git/blobs/${e.sha}`);
+      files.push({ name: `${r.name}/${e.path}`, data: b64(data.content) });
+    }
+  }));
+  files.sort((a, b) => a.name.localeCompare(b.name));
+  const meta = { ...pick(r), default_branch: r.default_branch, topics: r.topics || [], snapshot_at: new Date().toISOString(), files: blobs.length, truncated: !!tree.truncated, note: "Snapshot of the default branch made by repo-sweep before deletion. Not the git history." };
+  files.push({ name: `${r.name}/.repo-sweep.json`, data: new TextEncoder().encode(JSON.stringify(meta, null, 2)) });
+  const filename = `${r.name}-${new Date().toISOString().slice(0, 10)}.zip`;
+  download(zipStore(files), filename);
+  return { filename, files: blobs.length, truncated: !!tree.truncated };
+}
+
+const BIN = "repo-sweep:bin";
+const binRead = () => { try { return JSON.parse(localStorage.getItem(BIN) || "[]"); } catch { return []; } };
+function binAdd(r, snap) {
+  const list = binRead();
+  list.unshift({ ...pick(r), default_branch: r.default_branch, deleted_at: new Date().toISOString(), snapshot: snap ? snap.filename : null, snapshot_files: snap ? snap.files : null });
+  localStorage.setItem(BIN, JSON.stringify(list));
+  renderBin();
+}
+function renderBin() {
+  const list = binRead();
+  $("#binOpen").textContent = list.length ? `bin (${list.length})` : "bin";
+  $("#binEmpty").hidden = list.length > 0;
+  $("#binRows").replaceChildren(...list.map((e) => h("tr", {},
+    h("td", {}, h("a", { href: "https://github.com/settings/deleted_repositories", target: "_blank", rel: "noopener", title: "restore on GitHub" }, e.full_name), e.description ? h("div", { class: "dim" }, e.description) : null),
+    h("td", { class: "dim", title: e.deleted_at }, ago(e.deleted_at)),
+    h("td", { class: "dim" }, [e.private ? "private" : "public", e.fork ? "fork" : null, e.archived ? "archived" : null, e.language, e.stars ? `${e.stars} stars` : null].filter(Boolean).join(" · ")),
+    h("td", { class: "dim" }, e.snapshot ? `${e.snapshot} (${plural(e.snapshot_files, "file")})` : "none"))));
 }
 
 const pick = (r) => ({
@@ -682,6 +841,24 @@ $("#copyJson").addEventListener("click", () => copy("json"));
 $("#copyNames").addEventListener("click", () => copy("names"));
 $("#logClose").addEventListener("click", () => { $("#log").hidden = true; $("#logText").replaceChildren(); });
 $("#peekClose").addEventListener("click", () => $("#peek").close());
+$("#peekReadmeToggle").addEventListener("click", (e) => {
+  const off = $("#peek").classList.toggle("noreadme");
+  e.target.setAttribute("aria-pressed", String(off));
+  e.target.textContent = off ? "show readme" : "hide readme";
+});
+$("#peekFull").addEventListener("click", (e) => {
+  const full = $("#peek").classList.toggle("full");
+  e.target.setAttribute("aria-pressed", String(full));
+  e.target.textContent = full ? "exit full screen" : "full screen";
+});
+$("#binOpen").addEventListener("click", () => { renderBin(); $("#bin").showModal(); });
+$("#binClose").addEventListener("click", () => $("#bin").close());
+$("#binClear").addEventListener("click", async () => {
+  if (!binRead().length) return;
+  if (await ask({ title: "Clear the recycle bin", body: "Only this list goes; the snapshot zips on disk and GitHub's own 90-day restore are untouched.", ok: "Clear" })) { localStorage.removeItem(BIN); renderBin(); }
+});
+$("#binCopy").addEventListener("click", () => navigator.clipboard.writeText(JSON.stringify(binRead(), null, 2)).then(() => toast("Copied the bin as JSON"), () => toast("Clipboard blocked")));
+renderBin();
 $("#peek").addEventListener("close", () => { peek.repo = null; $("#peekReadme").removeAttribute("srcdoc"); });
 
 const saved = localStorage.getItem(KEY) || sessionStorage.getItem(KEY);
