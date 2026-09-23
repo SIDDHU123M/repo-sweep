@@ -6,6 +6,7 @@
 <meta name="color-scheme" content="dark light">
 <script>try{const m=localStorage.getItem("repo-sweep:theme");if(m==="light"||m==="dark"){document.documentElement.setAttribute("data-theme",m);document.documentElement.style.colorScheme=m}}catch{}</script>
 <title>repo-sweep</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='1' y='1' width='30' height='30' rx='7' fill='%23101013' stroke='%232A2A31'/%3E%3Crect x='7' y='7.5' width='5.5' height='5.5' rx='1.2' fill='%23FF6B2C'/%3E%3Cpath d='M8.3 10.3l1.4 1.4 2.4-2.6' fill='none' stroke='%23101013' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='15.5' y='9.3' width='10' height='2' rx='1' fill='%23B6BAC6'/%3E%3Crect x='7' y='14.5' width='5.5' height='5.5' rx='1.2' fill='%23FF6B2C'/%3E%3Cpath d='M8.3 17.3l1.4 1.4 2.4-2.6' fill='none' stroke='%23101013' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='15.5' y='16.3' width='7' height='2' rx='1' fill='%23B6BAC6'/%3E%3Crect x='7.5' y='22' width='4.5' height='4.5' rx='1' fill='none' stroke='%236B6B75'/%3E%3Crect x='15.5' y='23.3' width='9' height='2' rx='1' fill='%233A3A42'/%3E%3C/svg%3E">
 <meta name="description" content="Bulk-manage your GitHub repositories from one page: make private, archive, delete, copy as JSON. No server; the token stays in your browser.">
 <style>
 /* The font is embedded (ASCII subset of JetBrains Mono, OFL) so the page makes no request to any origin but api.github.com. */
@@ -58,7 +59,8 @@ code { background: var(--raised); border: 1px solid var(--line); border-radius: 
   display: flex; align-items: center; gap: 16px; padding: 0 22px; height: 56px;
   border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 3;
 }
-.brand { font-weight: 600; letter-spacing: 1px; font-size: 15px; }
+.brand { font-weight: 600; letter-spacing: 1px; font-size: 15px; display: flex; align-items: center; gap: 9px; }
+.brand .mark { flex: none; }
 .brand span { color: var(--accent); }
 .who { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .who img { border-radius: 50%; border: 1px solid var(--line); margin-right: 2px; }
@@ -134,8 +136,9 @@ input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); m
 .log .ok { color: var(--dim); } .log .fail { color: var(--danger); }
 .log progress { width: 100%; height: 3px; border: 0; display: block; accent-color: var(--accent); }
 
-dialog { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 22px; width: min(520px, calc(100vw - 32px)); }
-dialog::backdrop { background: color-mix(in srgb, var(--bg) 60%, transparent); }
+/* Glass: the panel carries the blur and stays translucent; the backdrop only dims (it is not an ancestor, so the blur samples the page). */
+dialog { background: color-mix(in srgb, var(--surface) 58%, transparent); -webkit-backdrop-filter: blur(28px) saturate(170%) brightness(1.08); backdrop-filter: blur(28px) saturate(170%) brightness(1.08); color: var(--ink); border: 1px solid color-mix(in srgb, var(--line) 80%, var(--ink)); border-radius: 8px; padding: 22px; width: min(520px, calc(100vw - 32px)); box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .7), inset 0 1px 0 color-mix(in srgb, var(--ink) 6%, transparent); }
+dialog::backdrop { background: color-mix(in srgb, var(--bg) 52%, transparent); }
 /* Open and close animations: the UA keeps display/overlay until the transition ends (allow-discrete). */
 dialog { opacity: 0; transform: translateY(10px) scale(.985); transition: opacity .22s ease, transform .26s cubic-bezier(.2,.8,.2,1), overlay .26s allow-discrete, display .26s allow-discrete; }
 dialog[open] { opacity: 1; transform: none; }
@@ -181,7 +184,6 @@ dialog .forks .suffix input { width: 160px; margin: 0; }
 #peek .readme { transition: flex-grow .35s cubic-bezier(.2,.8,.2,1), opacity .25s ease; }
 #peek.noreadme .readme { flex-grow: 0.0001; opacity: 0; pointer-events: none; overflow: hidden; }
 #peek.noreadme .files { border-right: 0; }
-#peek header .right button[aria-pressed=true] { color: var(--accent); }
 #peek header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
 #peek header h2 { margin: 0; font-size: 14px; }
 #peek header .crumbs { color: var(--dim); display: flex; gap: 4px; flex-wrap: wrap; }
@@ -189,6 +191,12 @@ dialog .forks .suffix input { width: 160px; margin: 0; }
 #peek header .crumbs button:hover { color: var(--ink); text-decoration: underline; }
 #peek header .crumbs b { color: var(--ink); font-weight: 600; }
 #peek header .right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+#peek .ib { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--dim); }
+#peek .ib:hover { color: var(--ink); border-color: var(--dim); text-decoration: none; }
+#peek .ib[aria-pressed="true"] { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+#peek .ib .b, #peek .ib[aria-pressed="true"] .a { display: none; }
+#peek .ib[aria-pressed="true"] .b { display: contents; }
+#peek .ib svg { display: block; }
 #peek .split { display: flex; flex: 1; min-height: 0; }
 #peek .files { flex: 5; min-width: 0; overflow: auto; border-right: 1px solid var(--line); }
 #peek .readme { flex: 3; min-width: 0; display: flex; flex-direction: column; }
@@ -226,7 +234,7 @@ dialog .forks .suffix input { width: 160px; margin: 0; }
 <body>
 
 <header class="top">
-  <div class="brand">repo<span>-sweep</span></div>
+  <div class="brand"><svg class="mark" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="7" fill="#101013" stroke="#2A2A31"/><rect x="7" y="7.5" width="5.5" height="5.5" rx="1.2" fill="#FF6B2C"/><path d="M8.3 10.3l1.4 1.4 2.4-2.6" fill="none" stroke="#101013" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="15.5" y="9.3" width="10" height="2" rx="1" fill="#B6BAC6"/><rect x="7" y="14.5" width="5.5" height="5.5" rx="1.2" fill="#FF6B2C"/><path d="M8.3 17.3l1.4 1.4 2.4-2.6" fill="none" stroke="#101013" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="15.5" y="16.3" width="7" height="2" rx="1" fill="#B6BAC6"/><rect x="7.5" y="22" width="4.5" height="4.5" rx="1" fill="none" stroke="#6B6B75"/><rect x="15.5" y="23.3" width="9" height="2" rx="1" fill="#3A3A42"/></svg>repo<span>-sweep</span></div>
   <div id="who" class="who" hidden>
     <img id="avatar" alt="" width="22" height="22">
     <span id="login"></span>
@@ -323,10 +331,10 @@ dialog .forks .suffix input { width: 160px; margin: 0; }
     <h2 id="peekName"></h2>
     <nav class="crumbs" id="peekCrumbs" aria-label="Path"></nav>
     <div class="right">
-      <a id="peekLink" href="#" target="_blank" rel="noopener" class="dim">open on GitHub</a>
-      <button type="button" id="peekReadmeToggle" class="ghost" aria-pressed="false">hide readme</button>
-      <button type="button" id="peekFull" class="ghost" aria-pressed="false">full screen</button>
-      <button type="button" id="peekClose" class="ghost">close</button>
+      <a id="peekLink" href="#" target="_blank" rel="noopener" class="ib" title="Open on GitHub" aria-label="Open on GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
+      <button type="button" id="peekReadmeToggle" class="ib" aria-pressed="false" title="Hide the README panel" aria-label="Hide the README panel"><span class="a"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m8 9 3 3-3 3"/></svg></span><span class="b"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/><path d="m10 15-3-3 3-3"/></svg></span></button>
+      <button type="button" id="peekFull" class="ib" aria-pressed="false" title="Full screen" aria-label="Full screen"><span class="a"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></svg></span><span class="b"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 10 7-7"/><path d="M20 10h-6V4"/><path d="m3 21 7-7"/><path d="M4 14h6v6"/></svg></span></button>
+      <button type="button" id="peekClose" class="ib" title="Close (Esc)" aria-label="Close"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
     </div>
   </header>
   <div class="split">
@@ -826,15 +834,15 @@ $("#copyJson").addEventListener("click", () => copy("json"));
 $("#copyNames").addEventListener("click", () => copy("names"));
 $("#logClose").addEventListener("click", () => { $("#log").hidden = true; $("#logText").replaceChildren(); });
 $("#peekClose").addEventListener("click", () => $("#peek").close());
-$("#peekReadmeToggle").addEventListener("click", (e) => {
-  const off = $("#peek").classList.toggle("noreadme");
-  e.target.setAttribute("aria-pressed", String(off));
-  e.target.textContent = off ? "show readme" : "hide readme";
+$("#peekReadmeToggle").addEventListener("click", () => {
+  const off = $("#peek").classList.toggle("noreadme"), b = $("#peekReadmeToggle");
+  b.setAttribute("aria-pressed", String(off));
+  b.title = b.ariaLabel = off ? "Show the README panel" : "Hide the README panel";
 });
-$("#peekFull").addEventListener("click", (e) => {
-  const full = $("#peek").classList.toggle("full");
-  e.target.setAttribute("aria-pressed", String(full));
-  e.target.textContent = full ? "exit full screen" : "full screen";
+$("#peekFull").addEventListener("click", () => {
+  const full = $("#peek").classList.toggle("full"), b = $("#peekFull");
+  b.setAttribute("aria-pressed", String(full));
+  b.title = b.ariaLabel = full ? "Exit full screen" : "Full screen";
 });
 $("#binOpen").addEventListener("click", () => { renderBin(); $("#bin").showModal(); });
 $("#binClose").addEventListener("click", () => $("#bin").close());
