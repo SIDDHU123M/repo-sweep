@@ -1,12 +1,12 @@
 name: Deploy to GitHub Pages
 
-# Publishes index.html alone. CLAUDE.md, the test harness, the docs folder and the workflows never
-# reach the site. Repository setting needed once: Settings, Pages, Source = "GitHub Actions".
+# Publishes index.html and the Open Graph image alone. CLAUDE.md, the test harness, the rest of docs and the
+# workflows never reach the site. Repository setting needed once: Settings, Pages, Source = "GitHub Actions".
 
 on:
   push:
     branches: [main]
-    paths: ["index.html", ".github/workflows/pages.yml"]
+    paths: ["index.html", "docs/og.png", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -27,10 +27,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Stage the site (index.html only)
+      - name: Stage the site (index.html and og.png only)
         run: |
           mkdir -p _site
-          cp index.html _site/
+          cp index.html docs/og.png _site/
           touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5

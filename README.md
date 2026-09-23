@@ -5,6 +5,8 @@
 
 Select the repositories you no longer want public, make them private, archive them, or delete them, and copy the list as JSON for use elsewhere. Click any repository to see its files beside its README before you decide. Your token goes to `api.github.com` and nowhere else.
 
+**Use it now: [siddhu123m.github.io/repo-sweep](https://siddhu123m.github.io/repo-sweep/)**, or open `index.html` from a clone. Same file either way.
+
 <p align="center">
 <picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/strip-what-it-does-light.svg"><img src="docs/gfx/strip-what-it-does.svg" alt="What it does" width="100%"></picture>
 <picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/features-1-light.svg"><img src="docs/gfx-c/features-1.svg" alt="Filter: stale, empty, forks, no stars. Select: rows, shift-click ranges, all visible. Act: private, public, archive, delete." width="100%"></picture>
@@ -48,7 +50,7 @@ Archived repositories are read-only; unarchive before changing their visibility.
 
 ## Run it
 
-Open `index.html` in a browser. That is the whole install.
+Open [the hosted page](https://siddhu123m.github.io/repo-sweep/) or `index.html` in a browser. That is the whole install. The first visit opens an About dialog with the features, the security notes and who built it; the `about` button in the header brings it back.
 
 To host it, fork the repository and set Settings, Pages, Source to "GitHub Actions". The included workflow (`.github/workflows/pages.yml`) publishes `index.html` alone on every push to `main`; nothing else in the repository reaches the site.
 
@@ -76,6 +78,15 @@ Without `delete_repo` everything except Delete works, and the page says so inste
 
 **Good habits.** Mint a token for this job and give it an expiry. Add `delete_repo` only when you intend to delete, and revoke the token when the sweep is done (GitHub: Settings, Developer settings, Personal access tokens). Do not tick "remember" on a shared machine. If you host the page, host it from your own fork, so the code you run is code you can read.
 
+## Built by
+
+<p align="center">
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/strip-built-by-light.svg"><img src="docs/gfx/strip-built-by.svg" alt="Built by" width="100%"></picture>
+<img src="docs/about.png" alt="The About dialog: what it does, security, and who built it" width="100%">
+</p>
+
+**Sidharth**, full-stack and Android developer in Hyderabad: [sidharth69.in](https://sidharth69.in). Made at [DevLune](https://devlune.in), his software studio. Source: [github.com/SIDDHU123M/repo-sweep](https://github.com/SIDDHU123M/repo-sweep). Hosted: [siddhu123m.github.io/repo-sweep](https://siddhu123m.github.io/repo-sweep/). MIT.
+
 ## Graphics
 
 The graphics above are SVG files with the font embedded, so GitHub renders them as designed in both themes; `<picture>` picks the light variant.
@@ -88,7 +99,10 @@ MIT.
 {
   "name": "repo-sweep",
   "form": "single HTML file, no build, no server, no dependencies, no third-party requests (font embedded)",
-  "hosting": "GitHub Pages via .github/workflows/pages.yml, which publishes index.html only",
+  "hosting": "GitHub Pages via .github/workflows/pages.yml, which publishes index.html and og.png only; live at https://siddhu123m.github.io/repo-sweep/",
+  "source": "https://github.com/SIDDHU123M/repo-sweep",
+  "author": { "name": "Sidharth", "site": "https://sidharth69.in", "studio": "DevLune, https://devlune.in", "location": "Hyderabad, India" },
+  "about_dialog": "opens on the first visit (localStorage 'repo-sweep:seen'), again from the header; features, security, credits",
   "auth": {
     "token_storage": ["memory", "sessionStorage (default)", "localStorage (opt-in 'remember')"],
     "preferred_token": "fine-grained, all repositories, Administration: read and write, with an expiry",
