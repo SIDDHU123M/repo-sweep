@@ -61,7 +61,7 @@ code { background: var(--raised); border: 1px solid var(--line); border-radius: 
 }
 .brand { font-weight: 600; letter-spacing: 1px; font-size: 15px; display: flex; align-items: center; gap: 9px; }
 .brand .mark { flex: none; }
-.brand span { color: var(--accent); }
+.brand .w > span { color: var(--accent); }
 .who { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .who img { border-radius: 50%; border: 1px solid var(--line); margin-right: 2px; }
 .who .sub { margin-right: 6px; }
@@ -128,13 +128,17 @@ input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); m
 .hint { color: var(--sub); font-size: 11.5px; align-self: center; }
 #toast { color: var(--accent); }
 
-.log { max-width: 1180px; margin: 12px auto 0; padding: 0 22px; }
-.log .box { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
-.log header { display: flex; align-items: center; padding: 6px 6px 6px 12px; border-bottom: 1px solid var(--line); color: var(--sub); font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; }
-.log header button { margin-left: auto; }
-.log pre { margin: 0; padding: 10px 12px; max-height: 180px; overflow: auto; font-size: 12px; line-height: 1.6; white-space: pre-wrap; }
-.log .ok { color: var(--dim); } .log .fail { color: var(--danger); }
-.log progress { width: 100%; height: 3px; border: 0; display: block; accent-color: var(--accent); }
+#run { width: min(600px, calc(100vw - 32px)); }
+#run .meter { display: flex; align-items: center; gap: 12px; margin: 14px 0 8px; }
+#run progress { flex: 1; height: 6px; border: 0; border-radius: 3px; overflow: hidden; accent-color: var(--accent); background: var(--line); }
+#run progress::-webkit-progress-bar { background: var(--line); border-radius: 3px; }
+#run progress::-webkit-progress-value { background: var(--accent); border-radius: 3px; transition: width .25s ease; }
+#run progress::-moz-progress-bar { background: var(--accent); }
+#runCount { min-width: 64px; text-align: right; font-weight: 600; }
+#runNow { margin: 0 0 10px; min-height: 1.5em; }
+#runLog { margin: 0; padding: 10px 12px; max-height: 240px; overflow: auto; font-size: 12px; line-height: 1.6; white-space: pre-wrap; background: var(--raised); border: 1px solid var(--line); border-radius: 6px; }
+#runLog .ok { color: var(--dim); } #runLog .fail { color: var(--danger); }
+#run.done h2 { color: var(--accent); }
 
 /* Glass: the panel carries the blur and stays translucent; the backdrop only dims (it is not an ancestor, so the blur samples the page). */
 dialog { background: color-mix(in srgb, var(--surface) 58%, transparent); -webkit-backdrop-filter: blur(28px) saturate(170%) brightness(1.08); backdrop-filter: blur(28px) saturate(170%) brightness(1.08); color: var(--ink); border: 1px solid color-mix(in srgb, var(--line) 80%, var(--ink)); border-radius: 8px; padding: 22px; width: min(520px, calc(100vw - 32px)); box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .7), inset 0 1px 0 color-mix(in srgb, var(--ink) 6%, transparent); }
@@ -175,7 +179,6 @@ dialog .forks p { margin: 0 0 10px; color: var(--dim); }
 dialog .forks .check { display: flex; gap: 8px; align-items: center; margin: 0 0 8px; }
 dialog .forks .suffix { display: flex; gap: 8px; align-items: center; margin: 0; color: var(--dim); }
 dialog .forks .suffix input { width: 160px; margin: 0; }
-.log header button + button { margin-left: 6px; }
 
 /* Repository peek: directory listing (5) beside the rendered README (3). */
 #peek { width: min(1240px, calc(100vw - 32px)); height: min(820px, calc(100vh - 32px)); max-width: 100vw; max-height: 100vh; padding: 0; flex-direction: column; transition: width .3s cubic-bezier(.2,.8,.2,1), height .3s cubic-bezier(.2,.8,.2,1), border-radius .3s, opacity .22s ease, transform .26s cubic-bezier(.2,.8,.2,1), overlay .26s allow-discrete, display .26s allow-discrete; }
@@ -237,7 +240,7 @@ dialog .forks .suffix input { width: 160px; margin: 0; }
 <body>
 
 <header class="top">
-  <div class="brand"><svg class="mark" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="7" fill="#101013" stroke="#2A2A31"/><rect x="7" y="7.5" width="5.5" height="5.5" rx="1.2" fill="#FF6B2C"/><path d="M8.3 10.3l1.4 1.4 2.4-2.6" fill="none" stroke="#101013" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="15.5" y="9.3" width="10" height="2" rx="1" fill="#B6BAC6"/><rect x="7" y="14.5" width="5.5" height="5.5" rx="1.2" fill="#FF6B2C"/><path d="M8.3 17.3l1.4 1.4 2.4-2.6" fill="none" stroke="#101013" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="15.5" y="16.3" width="7" height="2" rx="1" fill="#B6BAC6"/><rect x="7.5" y="22" width="4.5" height="4.5" rx="1" fill="none" stroke="#6B6B75"/><rect x="15.5" y="23.3" width="9" height="2" rx="1" fill="#3A3A42"/></svg>repo<span>-sweep</span></div>
+  <div class="brand"><svg class="mark" width="20" height="20" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="7" fill="#101013" stroke="#2A2A31"/><rect x="7" y="7.5" width="5.5" height="5.5" rx="1.2" fill="#FF6B2C"/><path d="M8.3 10.3l1.4 1.4 2.4-2.6" fill="none" stroke="#101013" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="15.5" y="9.3" width="10" height="2" rx="1" fill="#B6BAC6"/><rect x="7" y="14.5" width="5.5" height="5.5" rx="1.2" fill="#FF6B2C"/><path d="M8.3 17.3l1.4 1.4 2.4-2.6" fill="none" stroke="#101013" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><rect x="15.5" y="16.3" width="7" height="2" rx="1" fill="#B6BAC6"/><rect x="7.5" y="22" width="4.5" height="4.5" rx="1" fill="none" stroke="#6B6B75"/><rect x="15.5" y="23.3" width="9" height="2" rx="1" fill="#3A3A42"/></svg><span class="w">repo<span>-sweep</span></span></div>
   <div id="who" class="who" hidden>
     <img id="avatar" alt="" width="22" height="22">
     <span id="login"></span>
@@ -300,13 +303,13 @@ dialog .forks .suffix input { width: 160px; margin: 0; }
   </section>
 </main>
 
-<div id="log" class="log" hidden>
-  <div class="box">
-    <header><span id="logTitle">Activity</span><button id="logCommands" class="ghost" type="button" hidden>copy git commands</button><button id="logClose" class="ghost" type="button">close</button></header>
-    <progress id="progress" value="0" max="1" hidden></progress>
-    <pre id="logText"></pre>
-  </div>
-</div>
+<dialog id="run" aria-label="Progress">
+  <h2 id="runTitle"></h2>
+  <div class="meter"><progress id="runBar" value="0" max="1"></progress><span id="runCount"></span></div>
+  <p id="runNow" class="dim"></p>
+  <pre id="runLog"></pre>
+  <div class="dlgActions"><button type="button" id="runCommands" class="ghost" hidden>copy git commands</button><button type="button" id="runClose" class="primary" disabled>Close</button></div>
+</dialog>
 
 <footer id="bar" class="bar" hidden>
   <span id="sel" aria-live="polite">0 selected</span>
@@ -608,7 +611,7 @@ function ask({ title, body, list = [], typed = null, ok = "Continue", forks = 0,
 
 // ---------------------------------------------------------------- actions
 
-const logLine = (cls, text) => { $("#logText").append(h("div", { class: cls }, text)); $("#logText").scrollTop = 1e9; };
+const logLine = (cls, text) => { $("#runLog").append(h("div", { class: cls }, text)); $("#runLog").scrollTop = 1e9; };
 
 async function runAction(key) {
   const act = ACTIONS[key];
@@ -636,12 +639,19 @@ async function runAction(key) {
 
   state.busy = true;
   render();
-  $("#log").hidden = false;
-  $("#logTitle").textContent = `${act.label}: 0 / ${todo.length}`;
-  const bar = $("#progress");
-  bar.hidden = false; bar.max = todo.length; bar.value = 0;
+  const run = $("#run"), bar = $("#runBar");
+  run.classList.remove("done");
+  $("#runTitle").textContent = `${act.label[0].toUpperCase() + act.label.slice(1)}: ${plural(todo.length, "repository").replace("repositorys", "repositories")}`;
+  $("#runLog").replaceChildren();
+  $("#runCount").textContent = `0 / ${todo.length}`;
+  $("#runNow").textContent = "starting";
+  $("#runCommands").hidden = true;
+  $("#runClose").disabled = true;
+  bar.max = todo.length; bar.value = 0;
+  if (!run.open) run.showModal();
   let done = 0, failed = 0;
   for (const r of todo) {
+    $("#runNow").textContent = `working on ${r.full_name}`;
     try {
       if (forks.includes(r)) {
         if (!copyForks) { logLine("fail", `skip  ${r.full_name}: GitHub cannot make a fork private`); failed++; continue; }
@@ -663,20 +673,26 @@ async function runAction(key) {
       if (e.status === 401 || e.status === 403 && /rate limit/i.test(e.message)) { logLine("fail", "stopping: " + e.message); break; }
     }
     bar.value = done + failed;
-    $("#logTitle").textContent = `${act.label}: ${done + failed} / ${todo.length}`;
+    $("#runCount").textContent = `${done + failed} / ${todo.length}`;
     render();
     await sleep(300); // GitHub's secondary rate limit dislikes bursts of mutations
   }
   state.busy = false;
-  bar.hidden = true;
-  $("#logTitle").textContent = `${act.label}: ${done} ${act.past}${failed ? `, ${failed} failed` : ""}`;
+  const summary = `${done} ${act.past}${failed ? `, ${failed} failed` : ""}`;
+  $("#runTitle").textContent = summary;
+  $("#runNow").textContent = failed ? "Finished. The failed lines say why." : "Finished.";
+  run.classList.add("done");
   if (commands.length) {
-    logLine("ok", `Move the history into the ${plural(commands.length, "copy").replace("copys", "copies")} with git (copy git commands above), then delete the forks here.`);
-    const btn = $("#logCommands");
+    logLine("ok", `Move the history into the ${plural(commands.length, "copy").replace("copys", "copies")} with git (copy git commands below), then delete the forks here.`);
+    const btn = $("#runCommands");
     btn.hidden = false;
     btn.onclick = () => navigator.clipboard.writeText(commands.join("\n")).then(() => toast(`Copied ${plural(commands.length, "command")}`), () => ask({ title: "Clipboard blocked", body: "Copy from here.", list: commands, ok: "OK" }));
+    $("#runNow").textContent = "Finished. Reloading the list with the new copies.";
     try { await loadRepos(); } catch (e) { toast(e.message); } // the new private repositories join the list
-  } else $("#logCommands").hidden = true;
+    $("#runNow").textContent = "Finished.";
+  }
+  $("#runClose").disabled = false;
+  $("#runClose").focus();
   render();
 }
 
@@ -836,7 +852,8 @@ $("#pick").addEventListener("change", (e) => {
 });
 $("#copyJson").addEventListener("click", () => copy("json"));
 $("#copyNames").addEventListener("click", () => copy("names"));
-$("#logClose").addEventListener("click", () => { $("#log").hidden = true; $("#logText").replaceChildren(); });
+$("#run").addEventListener("cancel", (e) => { if (state.busy) e.preventDefault(); });
+$("#runClose").addEventListener("click", () => { $("#run").close(); toast($("#runTitle").textContent); });
 $("#peekClose").addEventListener("click", () => $("#peek").close());
 $("#peekReadmeToggle").addEventListener("click", () => {
   const off = $("#peek").classList.toggle("noreadme"), b = $("#peekReadmeToggle");

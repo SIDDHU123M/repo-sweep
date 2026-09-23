@@ -26,7 +26,11 @@ Two rows of chips over the same categories: **show only** and **hide**. They com
 <picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/timeline-light.svg"><img src="docs/gfx-c/timeline.svg" alt="1. Open index.html from disk or a GitHub Pages URL. 2. Paste a token, kept in this browser only. 3. Filter and select; show-only and hide rows combine, public minus forks. 4. Act, one at a time, every result logged. 5. Copy JSON: the keepers, ready for a profile README or a script." width="100%"></picture>
 </p>
 
-Actions run one at a time with a short gap, so GitHub's secondary rate limit is not tripped. Every result is logged, and a failure on one repository does not stop the rest.
+Actions run one at a time with a short gap, so GitHub's secondary rate limit is not tripped. A progress dialog shows the bar, the count, the repository being worked on and a live log; it stays until the run ends. A failure on one repository does not stop the rest.
+
+<p align="center">
+<img src="docs/run.png" alt="The progress dialog after an archive run: four of four done, the log listing each repository" width="100%">
+</p>
 
 <p align="center">
 <picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/strip-cannot-undo-light.svg"><img src="docs/gfx/strip-cannot-undo.svg" alt="Cannot be undone" width="100%"></picture>
@@ -104,7 +108,7 @@ MIT.
     "unarchive": "PATCH /repos/:full_name {archived:false}",
     "delete": "DELETE /repos/:full_name, red dialog, requires typing the count; the deleted repository is recorded in the recycle bin (localStorage 'repo-sweep:bin', with restore_until = +90 days) which links to https://github.com/settings/deleted_repositories; the GitHub API cannot list or restore deleted repositories"
   },
-  "run_policy": "sequential, 300 ms gap, per-repo log, stop on 401 or rate limit",
+  "run_policy": "sequential, 300 ms gap, a progress dialog (bar, counter, current repository, live log) that cannot be dismissed until the run ends, stop on 401 or rate limit",
   "peek": {
     "files": "GET /repos/:full_name/contents/:path, directories first, navigable",
     "readme": "GET /repos/:full_name/readme with Accept: application/vnd.github.html, shown in an iframe sandbox (no scripts, no same-origin) with <base> at the raw default branch",
