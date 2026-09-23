@@ -1,0 +1,15 @@
+_site/
+*_preview*.html
+
+# local only, never published: notes, tests, renderers, fonts, README variants, unused graphics
+CLAUDE.md
+test/
+docs/*.mjs
+docs/*.json
+docs/*.woff2
+docs/README-*.md
+docs/gfx-b/
+docs/gfx/*
+!docs/gfx/banner*.svg
+!docs/gfx/tiles*.svg
+!docs/gfx/strip-*.svg
