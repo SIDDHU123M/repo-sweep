@@ -9,8 +9,12 @@ Select the repositories you no longer want public, make them private, archive th
 
 <p align="center">
 <picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/strip-what-it-does-light.svg"><img src="docs/gfx/strip-what-it-does.svg" alt="What it does" width="100%"></picture>
-<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/features-1-light.svg"><img src="docs/gfx-c/features-1.svg" alt="Filter: stale, empty, forks, no stars. Select: rows, shift-click ranges, all visible. Act: private, public, archive, delete." width="100%"></picture>
-<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx-c/features-2-light.svg"><img src="docs/gfx-c/features-2.svg" alt="Export: copy JSON or plain names. Peek: files like ls beside the README. Confirm: exact list first, type the count." width="100%"></picture>
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/card-filter-light.svg"><img src="docs/gfx/card-filter.svg" alt="Filter: public, private, forks, archived, stale for a year, empty, no stars; show-only and hide rows combine; search and six sorts" width="49%"></picture>
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/card-select-light.svg"><img src="docs/gfx/card-select.svg" alt="Select: rows one by one, shift-click a range, everything the filter shows, or whole categories from the bar" width="49%"></picture>
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/card-act-light.svg"><img src="docs/gfx/card-act.svg" alt="Act: make private, make public, archive, unarchive, delete; the exact list first; a progress dialog runs them one at a time; forks get a private copy" width="49%"></picture>
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/card-export-light.svg"><img src="docs/gfx/card-export.svg" alt="Export: the selection as JSON objects or as a plain array of names" width="49%"></picture>
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/card-peek-light.svg"><img src="docs/gfx/card-peek.svg" alt="Peek: files and folders on the left like ls, the rendered README on the right; breadcrumb, hide README, full screen" width="49%"></picture>
+<picture><source media="(prefers-color-scheme: light)" srcset="docs/gfx/card-confirm-light.svg"><img src="docs/gfx/card-confirm.svg" alt="Confirm: every action lists the repositories it will touch and what GitHub cannot undo; delete is a red dialog with a typed count and lands in the recycle bin" width="49%"></picture>
 </p>
 
 <p align="center">

@@ -146,11 +146,11 @@ input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--accent); m
 #about .hero h2 span { color: var(--accent); }
 #about .hero p { margin: 0; }
 #about .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-#about section { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
 #about h3 { margin: 0 0 8px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--sub); font-weight: 600; }
-#about ul { margin: 0; padding-left: 16px; color: var(--dim); background: none; border: 0; max-height: none; }
-#about li { margin: 3px 0; }
-#about .who { margin-top: 14px; }
+#about .pts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; max-height: none; border: 0; background: none; }
+#about .pts li { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--raised) 55%, transparent); color: var(--dim); line-height: 1.4; }
+#about .pts .pi { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+#about .who { margin-top: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
 #about .who p { margin: 0; color: var(--dim); line-height: 1.7; }
 #about .who a { color: var(--accent); }
 #about .who .sep { color: var(--sub); }
@@ -400,30 +400,30 @@ dialog .forks .suffix input { width: 160px; margin: 0; }
     <div><h2>repo<span>-sweep</span></h2><p class="dim">Bulk-manage the GitHub repositories you own, from one HTML file. No build, no server, no dependencies.</p></div>
   </div>
   <div class="cols">
-    <section>
+    <div>
       <h3>What it does</h3>
-      <ul>
-        <li>Lists everything you own, public and private</li>
-        <li>Show-only and hide filters that combine; search; sort</li>
-        <li>Select rows, ranges, or whole categories</li>
-        <li>Make private or public, archive, unarchive, delete</li>
-        <li>Peek: files like <code>ls</code> beside the README</li>
-        <li>Copy the keepers as JSON or names</li>
-        <li>Recycle bin with GitHub's 90-day restore steps</li>
+      <ul class="pts">
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h.01"/><path d="M3 12h.01"/><path d="M3 19h.01"/><path d="M8 5h13"/><path d="M8 12h13"/><path d="M8 19h13"/></svg></span><span>Lists everything you own, public and private</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/></svg></span><span>Show-only and hide filters that combine; search; sort</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10.656V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.344"/><path d="m9 11 3 3L22 4"/></svg></span><span>Select rows, ranges, or whole categories</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></svg></span><span>Make private or public, archive, unarchive, delete</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg></span><span>Peek: files like <code>ls</code> beside the README</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg></span><span>Copy the keepers as JSON or names</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h2"/><path d="M20 8v11a2 2 0 0 1-2 2h-2"/><path d="m9 15 3-3 3 3"/><path d="M12 12v9"/></svg></span><span>Recycle bin with GitHub's 90-day restore steps</span></li>
       </ul>
-    </section>
-    <section>
+    </div>
+    <div>
       <h3>Security</h3>
-      <ul>
-        <li>Your token stays in this browser; sent to api.github.com only</li>
-        <li>No third-party script, font, image or analytics</li>
-        <li>Every destructive action lists the exact repositories first</li>
-        <li>Delete asks you to type the count</li>
-        <li>READMEs render in a sandboxed frame</li>
-        <li>The token never enters a URL</li>
-        <li>Open source, MIT: read the one file you run</li>
+      <ul class="pts">
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg></span><span>Your token stays in this browser; sent to api.github.com only</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg></span><span>No third-party script, font, image or analytics</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></svg></span><span>Every destructive action lists the exact repositories first</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/></svg></span><span>Delete asks you to type the count</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" x2="2" y1="6" y2="6"/><line x1="22" x2="2" y1="18" y2="18"/><line x1="6" x2="6" y1="2" y2="22"/><line x1="18" x2="18" y1="2" y2="22"/></svg></span><span>READMEs render in a sandboxed frame</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17H7A5 5 0 0 1 7 7"/><path d="M15 7h2a5 5 0 0 1 4 8"/><line x1="8" x2="12" y1="12" y2="12"/><line x1="2" x2="22" y1="2" y2="22"/></svg></span><span>The token never enters a URL</span></li>
+        <li><span class="pi"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12.15V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.706.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2h-3.35"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="m5 16-3 3 3 3"/><path d="m9 22 3-3-3-3"/></svg></span><span>Open source, MIT: read the one file you run</span></li>
       </ul>
-    </section>
+    </div>
   </div>
   <section class="who">
     <h3>Built by</h3>

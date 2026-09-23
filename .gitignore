@@ -13,3 +13,4 @@ docs/gfx/*
 !docs/gfx/banner*.svg
 !docs/gfx/tiles*.svg
 !docs/gfx/strip-*.svg
+!docs/gfx/card-*.svg
