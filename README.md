@@ -117,6 +117,7 @@ MIT.
   },
   "security": ["no third-party scripts, styles, fonts or analytics", "API text rendered via textContent, never innerHTML", "third-party README HTML confined to a sandboxed iframe", "token never in a URL", "recommend an expiring fine-grained token, delete_repo only when deleting, revoke after the sweep"],
   "irreversible": ["public to private erases stars and watchers and detaches forks", "delete: GitHub can restore for about 90 days (Settings, Repositories, Deleted repositories), then gone; repo-sweep keeps a bin entry", "archived is read-only until unarchived"],
+  "theme": "system, light or dark from the header button; stored in localStorage 'repo-sweep:theme' and applied before first paint",
   "peek_modes": ["hide readme (files take the full width)", "full screen", "animated open, close and resize; disabled under prefers-reduced-motion"],
   "license": "MIT"
 }

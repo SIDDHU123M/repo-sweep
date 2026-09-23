@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
+<script>try{const m=localStorage.getItem("repo-sweep:theme");if(m==="light"||m==="dark"){document.documentElement.setAttribute("data-theme",m);document.documentElement.style.colorScheme=m}}catch{}</script>
 <title>repo-sweep</title>
 <meta name="description" content="Bulk-manage your GitHub repositories from one page: make private, archive, delete, copy as JSON. No server; the token stays in your browser.">
 <style>
@@ -14,8 +15,14 @@
   --ink: #F4F4F5; --dim: #8B8B94; --sub: #6B6B75; --accent: #FF6B2C; --danger: #FF5A5A;
   --accent-ink: #0B0B0E;
 }
+/* Theme: dark is the base; light applies when forced (data-theme) or when the OS asks and nothing is forced. */
+:root[data-theme="light"] {
+  --bg: #FAFAF9; --surface: #FFFFFF; --raised: #F4F3F1; --line: #E4E2DE;
+  --ink: #1C1917; --dim: #57534E; --sub: #78716C; --accent: #C2410C; --danger: #B91C1C;
+  --accent-ink: #FFFFFF;
+}
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
     --bg: #FAFAF9; --surface: #FFFFFF; --raised: #F4F3F1; --line: #E4E2DE;
     --ink: #1C1917; --dim: #57534E; --sub: #78716C; --accent: #C2410C; --danger: #B91C1C;
     --accent-ink: #FFFFFF;
@@ -53,8 +60,14 @@ code { background: var(--raised); border: 1px solid var(--line); border-radius: 
 }
 .brand { font-weight: 600; letter-spacing: 1px; font-size: 15px; }
 .brand span { color: var(--accent); }
-.who { display: flex; align-items: center; gap: 10px; margin-left: auto; }
-.who img { border-radius: 50%; border: 1px solid var(--line); }
+.who { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.who img { border-radius: 50%; border: 1px solid var(--line); margin-right: 2px; }
+.who .sub { margin-right: 6px; }
+.who button { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; color: var(--dim); }
+.who button:hover:not(:disabled) { color: var(--ink); border-color: var(--dim); }
+.who button svg { flex: none; }
+#theme .on { display: contents; } #theme span[data-mode] { display: none; } #theme span[data-mode].on { display: contents; }
+@media (max-width: 720px) { .who button span.txt { display: none; } .who button { padding: 5px 8px; } }
 
 main { max-width: 1180px; margin: 0 auto; padding: 0 22px; }
 
@@ -218,9 +231,10 @@ dialog .forks .suffix input { width: 160px; margin: 0; }
     <img id="avatar" alt="" width="22" height="22">
     <span id="login"></span>
     <span id="count" class="sub"></span>
-    <button id="binOpen" class="ghost" type="button">bin</button>
-    <button id="reload" class="ghost" type="button">reload</button>
-    <button id="forget" class="ghost" type="button">forget token</button>
+    <button id="binOpen" type="button" title="Recycle bin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h2"/><path d="M20 8v11a2 2 0 0 1-2 2h-2"/><path d="m9 15 3-3 3 3"/><path d="M12 12v9"/></svg><span class="txt">bin</span></button>
+    <button id="reload" type="button" title="Reload the list"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg><span class="txt">reload</span></button>
+    <button id="theme" type="button" title="Theme: follows the system; click for light, then dark, then system"><span data-mode="system"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg><span class="txt">system</span></span><span data-mode="light"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><span class="txt">light</span></span><span data-mode="dark"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg><span class="txt">dark</span></span></button>
+    <button id="forget" type="button" title="Forget the token in this browser"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg><span class="txt">forget token</span></button>
   </div>
 </header>
 
@@ -668,7 +682,7 @@ function binAdd(r) {
 }
 function renderBin() {
   const list = binRead();
-  $("#binOpen").textContent = list.length ? `bin (${list.length})` : "bin";
+  $("#binOpen").querySelector(".txt").textContent = list.length ? `bin (${list.length})` : "bin";
   $("#binEmpty").hidden = list.length > 0;
   $("#binRows").replaceChildren(...list.map((e) => h("tr", {},
     h("td", {}, h("a", { href: "https://github.com/settings/deleted_repositories", target: "_blank", rel: "noopener", title: "restore on GitHub" }, e.full_name), e.description ? h("div", { class: "dim" }, e.description) : null),
@@ -769,6 +783,19 @@ $("#tokenForm").addEventListener("submit", async (e) => {
   btn.disabled = false;
 });
 $("#forget").addEventListener("click", forget);
+const THEME = "repo-sweep:theme", MODES = ["system", "light", "dark"];
+function applyTheme(mode) {
+  if (mode === "system") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", mode);
+  document.documentElement.style.colorScheme = mode === "system" ? "" : mode; // form controls and scrollbars follow
+  for (const s of document.querySelectorAll("#theme span[data-mode]")) s.classList.toggle("on", s.dataset.mode === mode);
+}
+applyTheme(MODES.includes(localStorage.getItem(THEME)) ? localStorage.getItem(THEME) : "system");
+$("#theme").addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme") || "system";
+  const next = MODES[(MODES.indexOf(cur) + 1) % MODES.length];
+  if (next === "system") localStorage.removeItem(THEME); else localStorage.setItem(THEME, next);
+  applyTheme(next);
+});
 $("#reload").addEventListener("click", () => loadRepos().catch((e) => toast(e.message)));
 $("#q").addEventListener("input", (e) => { state.q = e.target.value; render(); });
 $("#sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
